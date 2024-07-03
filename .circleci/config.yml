@@ -1,7 +1,13 @@
 version: 2.1
 
+executors:
+  java17:
+    docker:
+      - image: 'cimg/openjdk:17.0'
+
 orbs:
   android: circleci/android@2.1.2
+  maven: circleci/maven@1.3.0
 
 jobs:
   release-build:
@@ -18,6 +24,11 @@ jobs:
           path: app/build/outputs/apk/release/app-release-unsigned.apk
 
 workflows:
+  maven_test:
+    jobs:
+      - maven/test:
+          command: '-X compile'
+          executor: java17
   test-and-build:
     jobs:
       - release-build:
