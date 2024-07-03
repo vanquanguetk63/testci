@@ -1,35 +1,32 @@
 version: 2.1
 
 executors:
-  java17:
+  android:
     docker:
-      - image: 'cimg/openjdk:17.0'
-
-orbs:
-  android: circleci/android@2.1.2
-  maven: circleci/maven@1.3.0
+      - image: circleci/android:latest
+    working_directory: ~/project
 
 jobs:
-  release-build:
-    executor:
-      name: android/android-docker
-      tag: 2022.08.1
+  build:
+    executor: android
     steps:
       - checkout
       - run:
-          name: Assemble release build
+          name: Install JDK 17
           command: |
-            ./gradlew assembleRelease
-      - store_artifacts:
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+            sudo apt-get update
+            sudo apt-get install -y wget
+            wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb
+            sudo apt-get install -y ./jdk-17_linux-x64_bin.deb
+            sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-17/bin/java 1
+            sudo update-alternatives --set java /usr/lib/jvm/jdk-17/bin/java
+            java -version
+      - run:
+          name: Build Project
+          command: ./gradlew build
 
 workflows:
-  test-and-build:
+  version: 2
+  build_and_test:
     jobs:
-      - maven/test:
-          command: '-X compile'
-          executor: java17
-      - release-build:
-          filters:
-            branches:
-              only: master
+      - build
