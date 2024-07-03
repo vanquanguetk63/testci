@@ -24,13 +24,11 @@ jobs:
           path: app/build/outputs/apk/release/app-release-unsigned.apk
 
 workflows:
-  maven_test:
+  test-and-build:
     jobs:
       - maven/test:
           command: '-X compile'
           executor: java17
-  test-and-build:
-    jobs:
       - release-build:
           filters:
             branches:
