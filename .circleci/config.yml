@@ -2,26 +2,8 @@ version: 2.1
 
 orbs:
   android: circleci/android@2.1.2
-  gcp-cli: circleci/gcp-cli@2.4.1
-
-executors:
-  java-android-executor:
-    docker:
-      - image: openjdk:17-jdk
-    environment:
-      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-      ANDROID_HOME: /opt/android/sdk
-      PATH: /opt/android/sdk/platform-tools:/opt/android/sdk/tools:$PATH
 
 jobs:
-  install-jdk:
-    executor: java-android-executor
-    steps:
-        - checkout
-        - run:
-            name: Verify Java Version
-            command: java --version
-
   release-build:
     executor:
       name: android/android-docker
@@ -38,10 +20,7 @@ jobs:
 workflows:
   test-and-build:
     jobs:
-      - install-jdk
       - release-build:
-          requires:
-            - install-jdk
           filters:
             branches:
               only: master
