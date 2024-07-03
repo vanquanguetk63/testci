@@ -20,7 +20,7 @@ jobs:
         - checkout
         - run:
             name: Verify Java Version
-            command: java -version
+            command: java --version
 
   release-build:
     executor:
